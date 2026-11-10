@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+*.egg-info/
+.ipynb_checkpoints/
+
+data/raw/**
+!data/raw/.gitignore
+!data/raw/SHA256SUMS
+
+data/interim/**
+!data/interim/.gitkeep
+
+data/processed/**
+!data/processed/.gitkeep
