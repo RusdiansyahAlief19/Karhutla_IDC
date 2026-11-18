@@ -29,8 +29,9 @@ Berkas mentah tidak ikut ke Git karena ukurannya besar. Yang di-commit hanya `da
 - `data/raw/oni/oni.ascii.txt` — DJF 1950 sampai ASO 2026.
 - `data/raw/boundaries/gbOpen_IDN_ADM2.json` dan `idn_adm2.geojson` — 519 kabupaten/kota se-Indonesia, tahun batas 2020.
 
-## Yang belum masuk pipeline
+## Status data
 
-- Arsip FIRMS (perlu login atau kode email, hasilnya lewat email).
-- Berkas Trase (tombol unduh di situs).
-- SiPongi, CHIRPS, peta gambut, penduduk BPS, OpenAQ.
+- FIRMS VIIRS S-NPP dan Trase kabupaten sudah tersedia di `data/raw` lokal; data mentah tidak ikut ke repo kode. Checksum ada di `data/raw/SHA256SUMS`.
+- `make ingest-trase` mengunduh dua CSV kabupaten Trase melalui URL versi yang tercatat di `src/ingest/trase.py`.
+- `make crosswalk-review` membuat daftar padanan awal nama kabupaten Trase ke geoBoundaries di `data/interim/trase_crosswalk_review.csv`. Nama yang belum cocok dibiarkan untuk tinjauan manual; tidak ada fuzzy match.
+- Belum tersedia di pipeline: SiPongi, CHIRPS, raster tutupan gambut, penduduk BPS, dan OpenAQ.
