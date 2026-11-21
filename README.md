@@ -1,37 +1,58 @@
 # karhutla-idc
 
-Pipeline data untuk dashboard Looker Studio, lomba IDC Dateraquest 2.0, subtema Preservasi Ekosistem Tropis. Topiknya karhutla Sumatera 2015–2026. Dashboard tidak dibuat di repo ini.
+Reproducible data pipeline, analysis, and risk projections for an interactive
+dashboard on forest and land fires in Sumatra, 2015–2026. The Looker Studio
+dashboard is built separately by the team.
 
-## Perintah
+## Environment
 
-Di mesin ini `make` belum terpasang. Perintah yang setara:
+Use Python 3.11 and install the pipeline and development dependencies:
 
-```text
-python -m src.ingest.oni
-python -m src.ingest.boundaries
-python -m pytest
+```powershell
+python -m pip install -e ".[pipeline,dev]"
 ```
 
-Jika `make` tersedia, targetnya `make ingest`, `make check`, `make build`, `make model`, dan `make export`. Tiga target terakhir belum diisi dan sengaja berhenti.
+The current handover workspace has Python 3.10.11 and no Python 3.11 install;
+the test suite has passed on 3.10.11, but model and export runs should use 3.11.
 
-`python -m src.ingest.oni` dan `python -m src.ingest.boundaries` hanya mengunduh URL di handover. Kalau URL gagal, skrip berhenti. Tidak ada sumber pengganti.
+## Pipeline
 
-Berkas di `data/raw` tidak ditimpa. Unduhan ulang yang isinya sama dibiarkan. Isi yang berbeda menghentikan skrip. Checksum SHA-256 ditulis di `data/raw/SHA256SUMS`.
+`make build` rebuilds the spatial join, monthly and annual panels, and county
+geometry dimension from the local raw files. `make model` also builds model
+artifacts after rebuilding the inputs. `make export` builds the model, validates
+and writes the schema-defined exports, then validates and writes the forecast.
 
-## Lingkungan
+Equivalent module commands from the repository root:
 
-Target proyek Python 3.11. Mesin yang dipakai saat S0 hanya memiliki Python 3.10.11, jadi paket belum diinstal lewat `pip install -e .` (syarat `requires-python` menolaknya). Tes S0 dijalankan dengan Python yang ada setelah `pandera` dan `pytest` terpasang.
+```powershell
+python -m src.transform.spatial_join
+python -m src.transform.build_panel
+python -m src.ingest.build_dim_kabupaten
+python -m pytest
+python -m src.model.train
+python -m src.export.build_exports
+python -m src.model.forecast
+```
 
-## Unduhan S0
+Ingest commands (`make ingest`) download only the URLs listed in
+`docs/sources.md`. They do not overwrite `data/raw`; changed content stops the
+ingest and the checksum manifest is maintained separately.
 
-Berkas mentah tidak ikut ke Git karena ukurannya besar. Yang di-commit hanya `data/raw/SHA256SUMS`. Di mesin yang sudah menjalankan skrip, berkasnya:
+## Data and outputs
 
-- `data/raw/oni/oni.ascii.txt` — DJF 1950 sampai ASO 2026.
-- `data/raw/boundaries/gbOpen_IDN_ADM2.json` dan `idn_adm2.geojson` — 519 kabupaten/kota se-Indonesia, tahun batas 2020.
+- Hotspot counts use one sensor: VIIRS S-NPP 375 m. The data end on 31 October
+  2026. Archive and NRT labels are kept separate in `data_quality`.
+- Trase burned area, burned peat, and derived mineral area are annual measures
+  for 2015–2024. They are not monthly and are not hotspot counts.
+- CHIRPS, county peatland-cover share, and population are not ingested. Their
+  output fields stay `NaN`; rainfall-related findings remain inconclusive.
+- `data/processed` contains the Pandera-validated `dim_kabupaten.csv`,
+  `fact_kab_month.csv`, `fact_kab_year.csv`, `prov_summary_year.csv`, and
+  `ml_risk_forecast.csv` exports.
+- `model_metrics.csv` and `feature_importance.csv` have no approved column
+  contract yet, so the training command does not write those files.
+- A pre-existing local `model_metrics.csv` may be from an older run; the current
+  training command does not refresh it, so do not treat it as current results.
 
-## Status data
-
-- FIRMS VIIRS S-NPP dan Trase kabupaten sudah tersedia di `data/raw` lokal; data mentah tidak ikut ke repo kode. Checksum ada di `data/raw/SHA256SUMS`.
-- `make ingest-trase` mengunduh dua CSV kabupaten Trase melalui URL versi yang tercatat di `src/ingest/trase.py`.
-- `make crosswalk-review` membuat daftar padanan awal nama kabupaten Trase ke geoBoundaries di `data/interim/trase_crosswalk_review.csv`. Nama yang belum cocok dibiarkan untuk tinjauan manual; tidak ada fuzzy match.
-- Belum tersedia di pipeline: SiPongi, CHIRPS, raster tutupan gambut, penduduk BPS, dan OpenAQ.
+See [docs/methodology.md](docs/methodology.md), [docs/data_dictionary.md](docs/data_dictionary.md),
+and [docs/sources.md](docs/sources.md) for definitions and source coverage.

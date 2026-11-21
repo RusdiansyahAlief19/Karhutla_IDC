@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: ingest ingest-oni ingest-boundaries ingest-trase crosswalk-review build model export check
+.PHONY: ingest ingest-oni ingest-boundaries ingest-trase crosswalk-review build dim model export check
 
 ingest: ingest-oni ingest-boundaries ingest-trase
 
@@ -19,12 +19,17 @@ crosswalk-review:
 build:
 	$(PYTHON) -m src.transform.spatial_join
 	$(PYTHON) -m src.transform.build_panel
+	$(PYTHON) -m src.ingest.build_dim_kabupaten
 
-model:
-	@echo "model belum dibuat. Tahap S5 belum dimulai." && exit 2
+dim:
+	$(PYTHON) -m src.ingest.build_dim_kabupaten
 
-export:
-	@echo "export belum dibuat. Tahap S6 belum dimulai." && exit 2
+model: build
+	$(PYTHON) -m src.model.train
+
+export: model
+	$(PYTHON) -m src.export.build_exports
+	$(PYTHON) -m src.model.forecast
 
 check:
 	$(PYTHON) -m pytest

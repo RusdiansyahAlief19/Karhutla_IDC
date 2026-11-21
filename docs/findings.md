@@ -9,7 +9,7 @@ Dokumen ini mencatat hasil pengujian empiris enam hipotesis kerja untuk kompetis
 | ID | Hipotesis Singkat | Status | Bukti Kunci |
 |---|---|---|---|
 | **H1** | Sebaran titik panas 2026 lebih menyebar dibanding 2019 | **Tidak didukung** | Pada jendela Jan–Okt, HHI kabupaten 2026 (0,1081) lebih tinggi +75,2% dibanding 2019 (0,0617); Sumsel mendominasi 58,7% titik panas Sumatera di 2026. |
-| **H2** | Kebakaran di pesisir timur didominasi oleh lahan gambut | **Didukung** | Riau (78,5%) dan Jambi (68,3%) didominasi gambut; Sumsel mencatat luasan mutlak gambut terbakar tertinggi (307.205 ha). Sebaliknya Lampung, Babel, Bengkulu >95% di lahan mineral. |
+| **H2** | Kebakaran di pesisir timur didominasi oleh lahan gambut | **Didukung** | Riau (78,5%) dan Jambi (68,3%) didominasi gambut; Sumsel mencatat luasan mutlak gambut terbakar tertinggi (307.204,2 ha). Sebaliknya Lampung, Babel, Bengkulu >95% di lahan mineral. |
 | **H3** | Anomali curah hujan dan ONI berkorelasi terbalik dengan titik panas (lag 0–3) | **Tidak konklusif** | Data curah hujan spasial (CHIRPS) belum masuk pipeline per cut-off 18 November 2026; nilai hujan dibiarkan NaN sesuai kaidah integritas data. |
 | **H4** | Sebaran titik panas terkonsentrasi secara ekstrem pada segelintir kabupaten (Pareto) | **Didukung** | Hanya 8 dari 154 kabupaten (5,2%) menyumbang 50,6% titik panas se-Sumatera 2015–2026. Ogan Komering Ilir sendirian menyumbang 23,2%. |
 | **H5** | Terdapat kabupaten kronis yang persisten terbakar berulang setiap tahun | **Didukung** | Dengan definisi apriori $N \ge 6$ dari 10 tahun (2015–2024), teridentifikasi 11 kabupaten kronis, dipimpin Musi Banyuasin dan Musi Rawas (9 dari 10 tahun). |
@@ -63,14 +63,14 @@ Sumber: Trase / MapBiomas Fire Collection 2 level kabupaten (2015–2024).
 | RIAU | 206.688,8 | 162.176,7 | 44.512,1 | **78,46%** |
 | JAMBI | 85.123,9 | 58.120,7 | 27.003,2 | **68,28%** |
 | SUMATERA BARAT | 31.448,1 | 17.091,7 | 14.356,4 | **54,35%** |
-| SUMATERA SELATAN | 659.097,1 | 307.205,0 | 351.892,1 | **46,61%** |
+| SUMATERA SELATAN | 659.097,1 | 307.204,2 | 351.892,9 | **46,61%** |
 | ACEH | 23.110,7 | 8.568,3 | 14.542,4 | **37,07%** |
 | SUMATERA UTARA | 44.428,8 | 10.541,5 | 33.887,3 | **23,73%** |
 | KEPULAUAN BANGKA BELITUNG | 61.832,2 | 2.812,0 | 59.020,2 | **4,55%** |
 | LAMPUNG | 142.668,9 | 4.714,6 | 137.954,2 | **3,30%** |
 | BENGKULU | 3.450,5 | 34,3 | 3.416,2 | **0,99%** |
 | KEPULAUAN RIAU | 22.323,1 | 144,6 | 22.178,4 | **0,65%** |
-| **Total Sumatera** | **1.280.172,1** | **574.455,1** | **705.717,0** | **44,87%** |
+| **Total Sumatera** | **1.280.172,1** | **571.408,5** | **708.763,6** | **44,64%** |
 
 ---
 
@@ -79,7 +79,7 @@ Sumber: Trase / MapBiomas Fire Collection 2 level kabupaten (2015–2024).
 > **Status: Tidak konklusif**  
 > *Kalimat temuan:* Pengujian korelasi titik panas terhadap anomali curah hujan dan fase ENSO (lag 0–3 bulan) dinyatakan tidak konklusif karena lapisan spasial curah hujan (CHIRPS) belum tersedia dalam pipeline hingga batas waktu 18 November 2026.
 
-Catatan metode: Sesuai kesepakatan rencana kerja (tugas A8 & A9), kolom curah hujan dibiarkan bernilai `NaN` dan tidak diimputasi menggunakan estimasi sembarangan. Data indeks ONI NOAA CPC telah tersedia dari DJF 1950 sampai ASO 2026, dan akan disambungkan langsung ke model risiko pada tahap S5.
+Catatan metode: Sesuai kesepakatan rencana kerja (tugas A8 & A9), kolom curah hujan dibiarkan bernilai `NaN` dan tidak diimputasi menggunakan estimasi sembarangan. ONI NOAA CPC tersedia dari DJF 1950 sampai ASO 2026 dan dipakai sebagai fitur model risiko S5; ini tidak menggantikan data hujan yang belum tersedia.
 
 ---
 
@@ -156,3 +156,15 @@ Catatan metode: Sesuai kesepakatan rencana kerja (tugas A8 & A9), kolom curah hu
 
 - **Wilayah Utara (Riau, Aceh, Sumut)** mengalami fenomena kemarau pertama akibat pengaruh ekuatorial dan monsun timur laut pada bulan Februari–Maret, disusul kemarau kedua di pertengahan tahun. Riau mencatat 20,4% titik panasnya terjadi pada Februari–Maret.
 - **Wilayah Selatan (Sumsel, Lampung, Jambi)** sangat dipengaruhi monsun Australia/tenggara yang kering pada Agustus–Oktober. Di Sumatera Selatan, **79,0%** dari seluruh titik panas sepanjang 12 tahun terkonsentrasi hanya dalam 2 bulan (September dan Oktober), sementara di bulan Februari–Maret praktis mendekati nol (0,5%).
+
+---
+
+## Model risiko hotspot S5
+
+Model HGB dipilih untuk horizon 1, 2, dan 3 bulan berdasarkan expanding rolling-origin folds 2015–2022 dan jendela validasi 2023–2024. Fitur hotspot memakai data bulan origin yang sudah selesai; pengamatan target tidak masuk ke fitur. Uji holdout mencakup target Januari 2025–Oktober 2026 (22 bulan × 154 kabupaten untuk tiap horizon). Ukurannya adalah Poisson deviance rata-rata atas hitungan hotspot; lebih rendah berarti prediksi lebih dekat menurut loss ini.
+
+- **h=1:** deviance HGB 35,74; persistence 48,59; seasonal climatology 49,07; ENSO-conditioned climatology 38,54. HGB mengungguli ketiga pembanding pada holdout.
+- **h=2:** HGB 42,37; persistence 113,41; seasonal climatology 48,94; ENSO-conditioned climatology 35,66. HGB mengungguli dua baseline wajib, tetapi tidak mengungguli ENSO-conditioned climatology.
+- **h=3:** HGB 53,88; persistence 191,83; seasonal climatology 48,96; ENSO-conditioned climatology 37,87. HGB tidak mengungguli seasonal climatology maupun ENSO-conditioned climatology pada holdout.
+
+Perbandingan di atas adalah point estimate dan bukan uji signifikansi. Test holdout tidak dipakai untuk memilih keluarga model; hasil horizon 3 tetap dilaporkan sebagai keterbatasan performa. Ekspor forecast menghasilkan 1.386 baris untuk 154 kabupaten, tiga target bulan (November 2026–Januari 2027), dan tiga skenario ONI bersyarat. Nilai skenario bukan prakiraan resmi CPC. `model_metrics.csv` dan `feature_importance.csv` belum dibuat karena kontrak kolomnya belum disepakati.

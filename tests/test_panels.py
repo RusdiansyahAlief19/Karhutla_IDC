@@ -130,6 +130,48 @@ def test_spatial_join_totals_reconcile_with_raw_and_log(
     assert sum_panel_hotspots == joined
 
 
+def test_monthly_panel_matches_joined_raw_aggregates_by_county_month(
+    joined_rows: list[dict[str, str]],
+    monthly_panel_rows: list[dict[str, str]],
+) -> None:
+    joined = {
+        (row["month"], row["kab_id"]): int(row["hotspot_count"])
+        for row in joined_rows
+    }
+    panel = {
+        (row["month"], row["kab_id"]): int(row["hotspot_count"])
+        for row in monthly_panel_rows
+    }
+    assert set(joined).issubset(panel)
+    assert all(panel[key] == count for key, count in joined.items())
+    assert sum(panel.values()) == sum(joined.values())
+
+
+def test_annual_panel_matches_sumatra_trase_raw_aggregates(
+    root_dir: Path,
+    annual_panel_rows: list[dict[str, str]],
+    crosswalk_rows: list[dict[str, str]],
+) -> None:
+    import pandas as pd
+
+    sumatra_ids = {row["region_trase_id"] for row in crosswalk_rows}
+    panel = {
+        (int(row["year"]), row["kab_id"]): row
+        for row in annual_panel_rows
+    }
+    for filename, raw_column, panel_column in (
+        ("burned_area_kabupaten_20261104.csv", "burned_area_hectares", "burned_ha_total"),
+        ("burned_peat_kabupaten_20261104.csv", "burned_peatlands_hectares", "burned_ha_peat"),
+    ):
+        raw_path = root_dir / "data" / "raw" / "trase" / filename
+        raw = pd.read_csv(raw_path)
+        raw = raw[raw["region_trase_id"].isin(sumatra_ids)]
+        aggregate = raw.groupby(["year", "region_trase_id"])[raw_column].sum()
+        assert len(aggregate) == len(panel)
+        for (year, kab_id), hectares in aggregate.items():
+            assert abs(float(panel[(int(year), kab_id)][panel_column]) - float(hectares)) < 1e-5
+
+
 def test_annual_panel_reconciles_with_monthly_panel_and_trase(
     annual_panel_rows: list[dict[str, str]],
     monthly_panel_rows: list[dict[str, str]],

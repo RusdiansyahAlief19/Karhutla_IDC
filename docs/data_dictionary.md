@@ -4,6 +4,11 @@ Kolom di bawah ini menyalin kontrak bagian 6 handover. Arti yang tidak tertulis 
 
 Sel kosong pada data asli tetap `NaN`. Tidak ada imputasi.
 
+`peat_share_pct` berarti proporsi area kabupaten yang berupa gambut. Dataset
+tersebut belum tersedia, sehingga kolom ini tetap `NaN`. `peat_burn_share_pct`
+berarti proporsi hektare terbakar yang berada di gambut; nilainya tidak dipakai
+sebagai pengganti proporsi lahan.
+
 ## dim_kabupaten.csv
 
 Satu baris per kabupaten atau kota.
@@ -19,9 +24,9 @@ Satu baris per kabupaten atau kota.
 | centroid_lon | |
 | latlon | String `"lat,lon"` untuk field geografis Looker |
 | area_km2 | Dihitung pada CRS equal-area, bukan dari derajat |
-| peat_share_pct | |
-| population_latest | Boleh kosong |
-| population_year | Boleh kosong |
+| peat_share_pct | Proporsi area kabupaten yang berupa gambut; `NaN` sampai raster tersedia |
+| population_latest | `NaN`; data penduduk BPS belum diingest |
+| population_year | `NaN`; data penduduk BPS belum diingest |
 
 ## fact_kab_month.csv
 
@@ -36,16 +41,16 @@ Satu baris per kabupaten per bulan, 2015-01 sampai cut-off.
 | hotspot_per_100km2 | |
 | frp_sum | |
 | burn_days | |
-| rain_mm | |
-| rain_anom_mm | |
-| rain_anom_pct | |
+| rain_mm | `NaN`; CHIRPS belum diingest |
+| rain_anom_mm | `NaN`; CHIRPS belum diingest |
+| rain_anom_pct | `NaN`; CHIRPS belum diingest |
 | oni | |
-| enso_phase | Nilai kategori belum dikunci |
+| enso_phase | `el_nino`, `la_nina`, atau `netral` dari ONI; `NaN` jika ONI tidak tersedia |
 | data_quality | `SP` atau `NRT` |
 | prov_name | Turunan dari dimensi |
 | kab_name | Turunan dari dimensi |
 | latlon | Turunan dari dimensi |
-| peat_share_pct | Turunan dari dimensi |
+| peat_share_pct | Proporsi area kabupaten yang berupa gambut; `NaN` sampai raster tersedia |
 
 ## fact_kab_year.csv
 
@@ -65,7 +70,7 @@ Satu baris per kabupaten per tahun. Kolom turunan mengikuti daftar yang sama den
 | prov_name | Turunan |
 | kab_name | Turunan |
 | latlon | Turunan |
-| peat_share_pct | Turunan |
+| peat_share_pct | Proporsi area kabupaten yang berupa gambut; `NaN` sampai raster tersedia |
 
 ## prov_summary_year.csv
 
@@ -78,7 +83,7 @@ Satu baris per kabupaten per tahun. Kolom turunan mengikuti daftar yang sama den
 | burned_ha_total | |
 | burned_ha_peat | |
 | share_of_sumatra_hotspot_pct | |
-| concentration_index | Rumus belum dikunci. Hipotesis H1 menyebut Herfindahl atau share provinsi teratas sebagai contoh, bukan keputusan akhir. |
+| concentration_index | `NaN` sampai tim menyepakati rumus. HHI dan pangsa provinsi teratas adalah pilihan berbeda. |
 
 ## ml_risk_forecast.csv
 
@@ -87,13 +92,13 @@ Satu baris per kabupaten per tahun. Kolom turunan mengikuti daftar yang sama den
 | kab_id | |
 | kab_name | |
 | prov_name | |
-| target_window | Contoh di brief: `2027-06_2027-10` |
-| scenario | `netral`, `el_nino`, `la_nina` |
+| target_window | Bulan target `YYYY-MM`; untuk origin Oktober 2026, keluaran mencakup November 2026, Desember 2026, dan Januari 2027 |
+| scenario | Skenario ONI bersyarat: 0.0, +1.5, -1.0; bukan prakiraan resmi CPC |
 | risk_score | 0 sampai 1 |
 | risk_rank | |
 | risk_class | `rendah`, `sedang`, `tinggi`, `sangat_tinggi` |
-| top_driver_1 | |
-| top_driver_2 | |
+| top_driver_1 | Grup kontribusi fitur terbesar dari GLM; kosong untuk HGB/baseline, bukan sebab-akibat |
+| top_driver_2 | Grup kontribusi fitur terbesar kedua dari GLM; kosong untuk HGB/baseline, bukan sebab-akibat |
 | latlon | |
 
 ## model_metrics.csv
@@ -103,3 +108,8 @@ Daftar kolom belum ditentukan di bagian 6.
 ## feature_importance.csv
 
 Daftar kolom belum ditentukan di bagian 6.
+
+Kedua berkas model ini tidak ditulis sampai kontrak kolom ditentukan. Kolom
+forecast yang nullable tetap kosong jika keluarga terpilih bukan GLM. Berkas
+`data/processed/model_metrics.csv` yang mungkin sudah ada lokal berasal dari
+run lama dan tidak diperbarui oleh pipeline saat ini.
