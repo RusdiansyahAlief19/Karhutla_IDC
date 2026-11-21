@@ -4,6 +4,9 @@ Reproducible data pipeline, analysis, and risk projections for an interactive
 dashboard on forest and land fires in Sumatra, 2015–2026. The Looker Studio
 dashboard is built separately by the team.
 
+The latest validated dataset snapshots are published in the team's private
+[DATASET_KARHUTLA repository](https://github.com/RusdiansyahAlief19/DATASET_KARHUTLA).
+
 ## Environment
 
 Use Python 3.11 and install the pipeline and development dependencies:
